@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studiumsfortschritt</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #121a30;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-strong: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #67e8f9;
+      --accent-2: #60a5fa;
+      --border: rgba(255, 255, 255, 0.13);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+    }
+
+    body.theme-sky {
+      --bg: #dbeafe;
+      --bg-soft: #bfdbfe;
+      --card: rgba(255, 255, 255, 0.75);
+      --card-strong: rgba(255, 255, 255, 0.92);
+      --text: #0f172a;
+      --muted: #334155;
+      --accent: #38bdf8;
+      --accent-2: #60a5fa;
+      --border: rgba(15, 23, 42, 0.08);
+      --shadow: 0 18px 45px rgba(59, 130, 246, 0.15);
+    }
+
+    body.theme-sunset {
+      --bg: #2a1124;
+      --bg-soft: #4a1f3b;
+      --card: rgba(255, 255, 255, 0.09);
+      --card-strong: rgba(255, 255, 255, 0.14);
+      --text: #fff7ed;
+      --muted: #fed7aa;
+      --accent: #fb7185;
+      --accent-2: #f59e0b;
+      --border: rgba(255, 245, 238, 0.15);
+      --shadow: 0 18px 45px rgba(35, 8, 25, 0.35);
+    }
+
+    body.theme-forest {
+      --bg: #08140f;
+      --bg-soft: #10241b;
+      --card: rgba(255, 255, 255, 0.07);
+      --card-strong: rgba(255, 255, 255, 0.11);
+      --text: #ecfdf5;
+      --muted: #bbf7d0;
+      --accent: #4ade80;
+      --accent-2: #22c55e;
+      --border: rgba(220, 252, 231, 0.12);
+      --shadow: 0 18px 45px rgba(5, 20, 10, 0.35);
+    }
+
+    body.theme-paper {
+      --bg: #f8fafc;
+      --bg-soft: #e2e8f0;
+      --card: rgba(255, 255, 255, 0.9);
+      --card-strong: rgba(255, 255, 255, 0.98);
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0ea5e9;
+      --accent-2: #6366f1;
+      --border: rgba(15, 23, 42, 0.08);
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+    }
+
+    body.theme-ocean {
+      --bg: #020617;
+      --bg-soft: #0f172a;
+      --card: rgba(15, 23, 42, 0.72);
+      --card-strong: rgba(15, 23, 42, 0.9);
+      --text: #e5eefc;
+      --muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
+      --border: rgba(148, 163, 184, 0.16);
+      --shadow: 0 20px 55px rgba(2, 6, 23, 0.5);
+    }
+
+    body.theme-sunflower {
+      --bg: #fff7cc;
+      --bg-soft: #fde68a;
+      --card: rgba(255, 252, 232, 0.86);
+      --card-strong: rgba(255, 251, 214, 0.96);
+      --text: #4a3300;
+      --muted: #7c5a00;
+      --accent: #eab308;
+      --accent-2: #f59e0b;
+      --border: rgba(120, 83, 0, 0.12);
+      --shadow: 0 18px 45px rgba(120, 83, 0, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, Arial, sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 18%, transparent), transparent 28%),
+        radial-gradient(circle at bottom right, color-mix(in srgb, var(--accent-2) 18%, transparent), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-soft));
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .theme-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .theme-picker select {
+      background: var(--card-strong);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 36px 10px 12px;
+      font: inherit;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+
+      /* custom dropdown arrow */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 14px;
+    }
+
+    .theme-picker option {
+      background: var(--bg-soft);
+      color: var(--text);
+    }
+
+    h1 {
+      font-size: clamp(1.9rem, 5vw, 3.3rem);
+      font-weight: 600;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      max-width: 62ch;
+      margin-bottom: 28px;
+      font-size: 1.02rem;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .panel {
+      background: var(--card-strong);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      transition: background 0.35s ease, border-color 0.35s ease;
+    }
+
+    .primary-panel {
+      padding-top: 24px;
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-bottom: 0px;
+    }
+
+    .big-value {
+      font-size: clamp(2.3rem, 6vw, 3.7rem);
+      font-weight: 800;
+      line-height: 0.98;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    #dateLabel {
+      margin-top: 20px;
+    }
+
+    .week-time {
+      font-size: clamp(2.25rem, 6.8vw, 3.7rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .progress-wrap {
+      margin: 18px 0 24px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    body.theme-paper .progress-bar {
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: inherit;
+      transition: width 0.6s ease;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      transition: background 0.35s ease, border-color 0.35s ease;
+    }
+
+    body.theme-paper .stat {
+      background: rgba(15, 23, 42, 0.03);
+    }
+
+    body.theme-sky .theme-picker option {
+      background: #eff6ff;
+      color: #0f172a;
+    }
+
+    body.theme-sunset .theme-picker option {
+      background: #4a1f3b;
+      color: #fff7ed;
+    }
+
+    body.theme-forest .theme-picker option {
+      background: #10241b;
+      color: #ecfdf5;
+    }
+
+    body.theme-paper .theme-picker option {
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    body.theme-ocean .theme-picker option {
+      background: #0f172a;
+      color: #e5eefc;
+    }
+
+    body.theme-sunflower .theme-picker option {
+      background: #fff8dc;
+      color: #4a3300;
+    }
+
+    .stat .kicker {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 720px) {
+      .top-grid,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="topbar">
+      <div class="eyebrow">01.09.2025 → 30.09.2028</div>
+      <label class="theme-picker" for="themeSelect">
+        <span>Theme</span>
+        <select id="themeSelect">
+          <option value="sky">Sky</option>
+          <option value="sunset">Sunset</option>
+          <option value="forest">Forest</option>
+          <option value="paper">Paper</option>
+          <option value="ocean">Ocean</option>
+          <option value="sunflower">Sunflower</option>
+        </select>
+      </label>
+    </div>
+    <h1>Studiumsfortschritt</h1>
+    <p class="subtitle">
+      Der Gesamtfortschritt deines Studiums wird auf eine Arbeitswoche mit Montag bis Freitag,
+      jeweils 08:00 bis 16:30 Uhr, abgebildet. So wird aus dem Prozentwert ein intuitiver
+      Wochen-Zeitpunkt.
+    </p>
+
+    <section class="top-grid">
+      <div class="panel primary-panel">
+        <div class="label">Entspricht in der Arbeitswoche</div>
+        <div class="week-time" id="weekTimeValue">Montag, 08:00:00 Uhr</div>
+        <div class="label" id="dateLabel">Wird berechnet ...</div>
+      </div>
+
+      <div class="panel">
+        <div class="label">Gesamtfortschritt</div>
+        <div class="big-value" id="percentValue">0,00 %</div>
+      </div>
+    </section>
+
+    <section class="progress-wrap">
+      <div class="progress-header">
+        <span>Start: 01.09.2025</span>
+        <span>Ziel: 30.09.2028</span>
+      </div>
+      <div class="progress-bar" aria-label="Studiumsfortschritt">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article class="stat">
+        <div class="kicker">Vergangene Tage</div>
+        <div class="value" id="elapsedDays">0</div>
+      </article>
+      <article class="stat">
+        <div class="kicker">Verbleibende Tage</div>
+        <div class="value" id="remainingDays">0</div>
+      </article>
+      <article class="stat">
+        <div class="kicker">Gesamtdauer</div>
+        <div class="value" id="totalDays">0</div>
+      </article>
+    </section>
+
+    <p class="note" id="explanation">
+      Bei 10 % Fortschritt wäre das zum Beispiel Montag, 12:15 Uhr.
+    </p>
+  </main>
+
+  <script>
+    const studyStart = new Date('2025-09-01T00:00:00');
+    const studyEnd = new Date('2028-09-30T23:59:59');
+
+    const workWeekMinutes = 42.5 * 60; // 2550 Minuten
+    const minutesPerDay = 8.5 * 60;    // 510 Minuten
+    const dayNames = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+    const workStartHour = 8;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function formatGermanNumber(value, decimals = 2) {
+      return value.toLocaleString('de-DE', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    function mapProgressToWorkWeek(progress) {
+      const totalMinutes = progress * workWeekMinutes;
+      let dayIndex = Math.floor(totalMinutes / minutesPerDay);
+      let minuteFloatInDay = totalMinutes % minutesPerDay;
+
+      if (dayIndex >= 5) {
+        dayIndex = 4;
+        minuteFloatInDay = minutesPerDay;
+      }
+
+      const wholeMinutes = Math.floor(minuteFloatInDay);
+      let seconds = Math.round((minuteFloatInDay - wholeMinutes) * 60);
+      let hours = workStartHour + Math.floor(wholeMinutes / 60);
+      let minutes = wholeMinutes % 60;
+
+      if (seconds === 60) {
+        seconds = 0;
+        minutes += 1;
+      }
+
+      if (minutes === 60) {
+        minutes = 0;
+        hours += 1;
+      }
+
+      if (hours > 16 || (hours === 16 && minutes > 30)) {
+        hours = 16;
+        minutes = 30;
+        seconds = 0;
+      }
+
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      const ss = String(seconds).padStart(2, '0');
+      return `${dayNames[dayIndex]}, ${hh}:${mm}:${ss} Uhr`;
+    }
+
+    function applyTheme(theme) {
+      document.body.className = `theme-${theme}`;
+      localStorage.setItem('studyProgressTheme', theme);
+    }
+
+    function updateProgress() {
+      const now = new Date();
+      const totalMs = studyEnd - studyStart;
+      const elapsedMs = clamp(now - studyStart, 0, totalMs);
+      const progress = totalMs <= 0 ? 0 : elapsedMs / totalMs;
+
+      const totalDays = Math.ceil(totalMs / (1000 * 60 * 60 * 24));
+      const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
+      const remainingDays = Math.max(totalDays - elapsedDays, 0);
+
+      document.getElementById('percentValue').textContent = `${formatGermanNumber(progress * 100)} %`;
+      document.getElementById('weekTimeValue').textContent = mapProgressToWorkWeek(progress);
+      document.getElementById('progressFill').style.width = `${progress * 100}%`;
+      document.getElementById('elapsedDays').textContent = elapsedDays.toLocaleString('de-DE');
+      document.getElementById('remainingDays').textContent = remainingDays.toLocaleString('de-DE');
+      document.getElementById('totalDays').textContent = totalDays.toLocaleString('de-DE');
+      document.getElementById('dateLabel').textContent = `Stand: ${formatDate(now)}`;
+
+      const exampleText = `Die Umrechnung basiert auf 42,5 Wochenstunden. 10,00 % entsprächen Montag, 12:15:00 Uhr. Aktuell entspräche dein Studium ${mapProgressToWorkWeek(progress)}.`;
+      document.getElementById('explanation').textContent = exampleText;
+    }
+
+    const savedTheme = localStorage.getItem('studyProgressTheme') || 'sky';
+    const themeSelect = document.getElementById('themeSelect');
+    themeSelect.value = savedTheme;
+    applyTheme(savedTheme);
+
+    themeSelect.addEventListener('change', (event) => {
+      applyTheme(event.target.value);
+    });
+
+    updateProgress();
+    setInterval(updateProgress, 1000);
+  </script>
+</body>
+</html>
